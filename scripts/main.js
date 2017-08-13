@@ -7,6 +7,7 @@ main = {
 
     hitSounds : [],
     explodeSound : null,
+    jumpSound : null,
 
     naziList : [],
 
@@ -33,6 +34,7 @@ main = {
 
             move : function( settings ) {
                 this.x += ( this.xVel * this.speed );
+                this.y += ( this.yVel * this.speed );
 
                 if ( this.x < 0 )
                 {
@@ -96,6 +98,7 @@ main = {
             },
 
             jump : function() {
+                this.yVel = -3;
             }
         },
 
@@ -121,6 +124,7 @@ main = {
         main.hitSounds.push( hit3 );
 
         main.explodeSound = new Audio( "assets/explode.wav" );
+        main.jumpSound = new Audio( "assets/jump.wav" );
 
         // player
         //main.player.image = new Image();
@@ -145,7 +149,12 @@ main = {
                 w : 32,
                 h : 32,
                 hp : 100,
+                
                 image : null,
+                imgIdle : null,
+                imgHit : null,
+                imgDed : null,
+                
                 xVel : 1,
                 yVel : 0,
                 active : false,
@@ -155,9 +164,23 @@ main = {
                 deaccY : 0.1,
                 deaccX : 0.5,
                 ded : false,
+                countdown : 0,
 
                 update : function()
                 {
+                    if ( this.ded )
+                    {
+                        this.image = this.imgDed;
+                    }
+                    else if ( this.countdown <= 0 )
+                    {
+                        this.image = this.imgIdle;
+                    }
+                    else
+                    {
+                        this.countdown -= 1;
+                    }
+                    
                     // Hit the ground
                     if ( this.y < 480-64 )
                     {
@@ -207,7 +230,8 @@ main = {
 
                 getPunched : function( fromX, fromY )
                 {
-                    console.log( "Punch", this, fromX, fromY );
+                    this.image = nazi.imgHit;
+                    this.countdown = 30;
 
                     var xVal = Math.floor( Math.random() * 3 ) - 1; // -1, 0, 1
                     console.log( "Random:", xVal );
@@ -236,8 +260,18 @@ main = {
                 }
             }
 
-            nazi.image = new Image();
-            nazi.image.src = "assets/nazi.png";
+            //nazi.image = new Image();
+            //nazi.image.src = "assets/nazi.png";
+
+            nazi.imgIdle = new Image();
+            nazi.imgHit = new Image();
+            nazi.imgDed = new Image();
+
+            nazi.imgIdle.src = "assets/nazi.png";
+            nazi.imgHit.src = "assets/nazi_hit.png";
+            nazi.imgDed.src = "assets/nazi_ded.png";
+
+            nazi.image = nazi.imgIdle;
 
             if ( i == 0 )
             {
@@ -357,6 +391,8 @@ main = {
         }
         else if ( event.key == "k" )
         {
+            main.player.jump();
+            main.jumpSound.play();
         }
         else if ( event.key == "j" )
         {
