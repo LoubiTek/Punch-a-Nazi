@@ -5,6 +5,9 @@ main = {
     backgroundImage : null,
     counter : 0,
 
+    hitSounds : [],
+    explodeSound : null,
+
     naziList : [],
 
     nazis : null,
@@ -16,8 +19,17 @@ main = {
             h : 32,
             speed : 10,
             xVel : 0,
+            yVel : 0,
             score : 0,
             image : null,
+
+            imgWalk1 : null,
+            imgWalk2 : null,
+            imgPunch : null,
+            countdown : 0,
+
+            frame : 0,
+            maxFrame : 2,
 
             move : function( settings ) {
                 this.x += ( this.xVel * this.speed );
@@ -30,6 +42,60 @@ main = {
                 {
                     this.x = settings.w - this.w;
                 }
+            
+                if ( this.y < 480-64 )
+                {
+                    // fall
+                    this.yVel += 0.5;
+                    if ( this.yVel > 5 )
+                    {
+                        this.yVel = 5;
+                    }
+                }
+                else
+                {
+                    this.y = 480-64;
+                    this.yVel = 0;
+                }
+
+                if ( this.xVel <= -1 || this.xVel >= 1 )
+                {
+                    // animate
+                    this.frame = this.frame + 0.1;
+                    if ( this.frame >= this.maxFrame )
+                    {
+                        this.frame = 0;
+                    }
+                }
+
+                if ( this.countdown == 0 )
+                {
+                    if ( Math.floor( this.frame ) == 0 )
+                    {
+                        this.image = this.imgWalk1;
+                    }
+                    else
+                    {
+                        this.image = this.imgWalk2;
+                    }
+                }
+                else
+                {
+                    this.countdown -= 1;
+                }
+            },
+
+            draw : function( window ) {
+                window.drawImage( main.player.image, main.player.x, main.player.y );
+            },
+
+            punch : function() {
+                this.image = this.imgPunch;
+                this.score += 10;
+                this.countdown = 20;
+            },
+
+            jump : function() {
             }
         },
 
@@ -47,9 +113,25 @@ main = {
         main.backgroundImage = new Image();
         main.backgroundImage.src = "assets/background.png";
 
+        var hit1 = new Audio( "assets/hit1.wav" );
+        var hit2 = new Audio( "assets/hit2.wav" );
+        var hit3 = new Audio( "assets/hit3.wav" );
+        main.hitSounds.push( hit1 );
+        main.hitSounds.push( hit2 );
+        main.hitSounds.push( hit3 );
+
+        main.explodeSound = new Audio( "assets/explode.wav" );
+
         // player
-        main.player.image = new Image();
-        main.player.image.src = "assets/hero.png";
+        //main.player.image = new Image();
+        main.player.imgWalk1 = new Image();
+        main.player.imgWalk2 = new Image();
+        main.player.imgPunch = new Image();
+        
+        //main.player.image.src = "assets/hero.png";
+        main.player.imgWalk1.src = "assets/hero_idle.png";
+        main.player.imgWalk2.src = "assets/hero_walk.png";
+        main.player.imgPunch.src = "assets/hero_punch.png";
 
         // nazi list
         main.nazis = new Array();
@@ -64,15 +146,19 @@ main = {
                 h : 32,
                 hp : 100,
                 image : null,
-                xVel : 0,
+                xVel : 1,
                 yVel : 0,
                 active : false,
-                gravity : 1,
-                speed : 10,
+                gravity : 2,
+                speed : 2,
                 punchWeight : 10,
+                deaccY : 0.1,
+                deaccX : 0.5,
+                ded : false,
 
                 update : function()
                 {
+                    // Hit the ground
                     if ( this.y < 480-64 )
                     {
                         // fall
@@ -88,43 +174,65 @@ main = {
                         this.yVel = 0;
                     }
 
-                    
+                    // Don't go off screen
                     if ( this.x < 0 )
                     {
                         this.x = 0;
                         this.xVel = 0;
                     }
-                    else if ( this.x + this.w > 480 )
+                    else if ( this.x + this.w > 640 )
                     {
-                        this.x = 480 - 32;
+                        this.x = 640 - 32;
                         this.xVel = 0;
                     }
 
+                    // Move according to velocity
                     this.y += ( this.yVel * this.gravity );
-
                     this.x += ( this.xVel * this.speed );
+
+                    // Deaccelerate
+                    if ( this.xVel < 0 ) {
+                        this.xVel += this.deaccX;
+                    }
+                    else if ( this.xVel > 0 ) {
+                        this.xVel -= this.deaccX;
+                    }
+                    if ( this.yVel < 0 ) {
+                        this.yVel += this.deaccY;
+                    }
+                    else if ( this.yVel > 0 ) {
+                        this.yVel -= this.deaccY;
+                    }
                 },
 
                 getPunched : function( fromX, fromY )
                 {
                     console.log( "Punch", this, fromX, fromY );
-                    if ( fromX < this.x )
+
+                    var xVal = Math.floor( Math.random() * 3 ) - 1; // -1, 0, 1
+                    console.log( "Random:", xVal );
+                                       
+                    this.yVel -= this.punchWeight;
+                    if ( fromX -+ 16 < this.x )
                     {
-                        this.xVel += this.punchWeight;
+                        this.xVel += -xVal * this.punchWeight;
                     }
-                    else
+                    else if ( fromX + 16 > this.x )
                     {
-                        this.xVal -= this.punchWeight;
+                        this.xVel += xVal * this.punchWeight;
+                    }
+                    
+                    this.y += ( this.yVel * this.gravity ); 
+                    
+                    console.log( "xVel:", this.xVel, "yVel:", this.yVel );
+
+                    this.hp -= Math.floor( Math.random() * 20 ) + 10;
+                    if ( this.hp <= 0 )
+                    {
+                        this.ded = true;
                     }
 
-                    if ( fromY < this.y )
-                    {
-                        this.yVel += this.punchWeight;
-                    }
-                    else
-                    {
-                        this.yVel -= this.punchWeight;
-                    }
+                    return this.ded;
                 }
             }
 
@@ -152,13 +260,13 @@ main = {
         main.player.move( main.settings );
 
         // update nazi
-            for ( i = 0; i < main.nazis.length; i++ )
+        for ( i = 0; i < main.nazis.length; i++ )
+        {
+            if ( main.nazis[i].active == true )
             {
-                if ( main.nazis[i].active == true )
-                {
-                    main.nazis[i].update();
-                }
+                main.nazis[i].update();
             }
+        }
     },
 
     draw : function() {
@@ -179,9 +287,11 @@ main = {
             }
 
             // Draw player
-            main.canvasWindow.drawImage( main.player.image, main.player.x, main.player.y );
+            main.player.draw( main.canvasWindow );
 
             // Draw score
+            main.canvasWindow.fillStyle = "#ffffff";
+            main.canvasWindow.font = "20px monospace";
             main.canvasWindow.fillText( "Score: " + main.player.score, 10, 25 );
 
             // Draw nazi
@@ -189,7 +299,20 @@ main = {
             {
                 if ( main.nazis[i].active == true )
                 {
-                    main.canvasWindow.drawImage( main.nazis[i].image, main.nazis[i].x, main.nazis[i].y );
+                    // image
+                    if ( main.nazis[i].isded )
+                    {
+                        main.canvasWindow.drawImage( main.nazis[i].image, main.nazis[i].x, main.nazis[i].y );
+                    }
+                    else
+                    {
+                        main.canvasWindow.drawImage( main.nazis[i].image, main.nazis[i].x, main.nazis[i].y );
+                    }
+                    // name
+                    main.canvasWindow.fillStyle = "#ff0000";
+                    main.canvasWindow.font = "12px monospace";
+                    var letterCount = main.nazis[i].name.length * 5;
+                    main.canvasWindow.fillText( main.nazis[i].name, main.nazis[i].x - letterCount/2, main.nazis[i].y - 5 );
                 }
             }
         }
@@ -232,6 +355,9 @@ main = {
         {
             main.player.xVel = 1;
         }
+        else if ( event.key == "k" )
+        {
+        }
         else if ( event.key == "j" )
         {
             // punch
@@ -242,7 +368,21 @@ main = {
                     if ( main.isCollision( main.player, main.nazis[i] ) )
                     {
                         // punched!
-                        main.nazis[i].getPunched( main.player.x, main.player.y );
+                        var isded = main.nazis[i].getPunched( main.player.x, main.player.y );
+                        main.player.punch();
+
+                        var rand = Math.floor( Math.random() * 3 );
+                        main.hitSounds[ rand ].play();
+
+                        if ( isded )
+                        {
+                            // activate next nazi
+                            if ( i + 1 < main.nazis.length )
+                            {
+                                main.nazis[i+1].active = true;
+                            }
+                            main.explodeSound.play();
+                        }
                     }
                 }
             }            
@@ -252,9 +392,9 @@ main = {
           main.gamePaused=!main.gamePaused;
           if(main.gamePaused == true)
           {
-            main.music.pause();
+            //main.music.pause();
           }else{
-            main.music.play();
+            //main.music.play();
           }
         }
     },

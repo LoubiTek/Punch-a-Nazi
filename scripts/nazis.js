@@ -11,9 +11,13 @@ function findNazis()
     nazis.push( "Joey Salads" );
     nazis.push( "Matthew Colligan" );
     nazis.push( "Steve Bannon" );
+    nazis.push( "Donald Trump" );
     nazis.push( "Pete Tefft" );
     nazis.push( "Cole White" );
-    nazis.push( "asdf" );
+    nazis.push( "James Allsup" );
+    nazis.push( "Ryan Martin" );
+    nazis.push( "Jacob Dix" );
+    nazis.push( "Matthew Campbell" );
 
     return nazis;
 }
