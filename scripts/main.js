@@ -4,6 +4,7 @@ main = {
     music : null,
     backgroundImage : null,
     counter : 0,
+    music : null,
 
     hitSounds : [],
     explodeSound : null,
@@ -133,6 +134,9 @@ main = {
 
         main.explodeSound = new Audio( "assets/explode.wav" );
         main.jumpSound = new Audio( "assets/jump.wav" );
+
+        main.music = new Audio( "assets/new_name_by_doom_road.wav" );
+        main.music.play();
 
         // player
         //main.player.image = new Image();
