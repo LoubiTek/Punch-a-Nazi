@@ -8,6 +8,11 @@ main = {
     hitSounds : [],
     explodeSound : null,
     jumpSound : null,
+    hitCountdown : null,
+    hitAmount : null,
+    hitX : 0,
+    hitY : 0,
+    gameOver : false,
 
     naziList : [],
 
@@ -234,7 +239,6 @@ main = {
                     this.countdown = 30;
 
                     var xVal = Math.floor( Math.random() * 3 ) - 1; // -1, 0, 1
-                    console.log( "Random:", xVal );
                                        
                     this.yVel -= this.punchWeight;
                     if ( fromX -+ 16 < this.x )
@@ -246,11 +250,14 @@ main = {
                         this.xVel += xVal * this.punchWeight;
                     }
                     
-                    this.y += ( this.yVel * this.gravity ); 
-                    
-                    console.log( "xVel:", this.xVel, "yVel:", this.yVel );
+                    this.y += ( this.yVel * this.gravity );
 
-                    this.hp -= Math.floor( Math.random() * 20 ) + 10;
+                    main.hitAmount = Math.floor( Math.random() * 20 ) + 10;
+
+                    this.hp -= main.hitAmount;
+                    main.hitCountdown = 10;
+                    main.hitX = fromX;
+                    main.hitY = fromY;
                     if ( this.hp <= 0 )
                     {
                         this.ded = true;
@@ -301,6 +308,12 @@ main = {
                 main.nazis[i].update();
             }
         }
+
+        if ( main.hitCountdown > 0 )
+        {
+            main.hitCountdown -= 1;
+            main.hitY -= 1;
+        }
     },
 
     draw : function() {
@@ -309,50 +322,76 @@ main = {
         // Draw background
         main.canvasWindow.drawImage( main.backgroundImage, 0, 0 );
 
-        if ( main.gameOver == false )
+        // Draw player
+        main.player.draw( main.canvasWindow );
+
+        // Draw score
+        main.canvasWindow.fillStyle = "#ffffff";
+        main.canvasWindow.font = "20px monospace";
+        main.canvasWindow.fillText( "Score: " + main.player.score, 10, 25 );
+    
+        // Draw nazi
+        for ( i = 0; i < main.nazis.length; i++ )
         {
-            // gameplay
-
-            if ( main.counter % 100 < 50 )
+            if ( main.nazis[i].active == true )
             {
-                main.canvasWindow.fillStyle = "#ffffff";
-                main.canvasWindow.font = "20px monospace";
-                main.canvasWindow.fillText( "SUPER PUNCH-A-NAZI", 200, 25 );
+                // image
+                if ( main.nazis[i].isded )
+                {
+                    main.canvasWindow.drawImage( main.nazis[i].image, main.nazis[i].x, main.nazis[i].y );
+                }
+                else
+                {
+                    main.canvasWindow.drawImage( main.nazis[i].image, main.nazis[i].x, main.nazis[i].y );
+                }
+
+                var letterCount = main.nazis[i].name.length * 5;
+                var x = main.nazis[i].x - letterCount/2;
+                var y = main.nazis[i].y - 5;
+                
+                // name - outline
+                main.canvasWindow.fillStyle = "#000000";
+                main.canvasWindow.font = "12px monospace";
+                main.canvasWindow.fillText( main.nazis[i].name, x+1, y+1 );
+                main.canvasWindow.fillText( main.nazis[i].name, x+1, y-1 );
+                main.canvasWindow.fillText( main.nazis[i].name, x-1, y+1 );
+                main.canvasWindow.fillText( main.nazis[i].name, x-1, y-1 );
+
+                // name - main
+                main.canvasWindow.fillStyle = "#ff0000";
+                main.canvasWindow.font = "12px monospace";
+                main.canvasWindow.fillText( main.nazis[i].name, x, y );
             }
+        }
 
-            // Draw player
-            main.player.draw( main.canvasWindow );
-
-            // Draw score
+        if ( main.counter % 100 < 50 )
+        {
             main.canvasWindow.fillStyle = "#ffffff";
             main.canvasWindow.font = "20px monospace";
-            main.canvasWindow.fillText( "Score: " + main.player.score, 10, 25 );
+            main.canvasWindow.fillText( "SUPER PUNCH-A-NAZI", 200, 25 );
+        }
 
-            // Draw nazi
-            for ( i = 0; i < main.nazis.length; i++ )
+        if ( main.gameOver == false )
+        {
+            // Draw damage
+            if ( main.hitCountdown > 0 )
             {
-                if ( main.nazis[i].active == true )
-                {
-                    // image
-                    if ( main.nazis[i].isded )
-                    {
-                        main.canvasWindow.drawImage( main.nazis[i].image, main.nazis[i].x, main.nazis[i].y );
-                    }
-                    else
-                    {
-                        main.canvasWindow.drawImage( main.nazis[i].image, main.nazis[i].x, main.nazis[i].y );
-                    }
-                    // name
-                    main.canvasWindow.fillStyle = "#ff0000";
-                    main.canvasWindow.font = "12px monospace";
-                    var letterCount = main.nazis[i].name.length * 5;
-                    main.canvasWindow.fillText( main.nazis[i].name, main.nazis[i].x - letterCount/2, main.nazis[i].y - 5 );
-                }
+                main.canvasWindow.fillStyle = "#ffff00";
+                main.canvasWindow.font = "15px monospace";
+                main.canvasWindow.fillText( main.hitAmount, main.hitX, main.hitY );                
             }
         }
         else
         {
             // game over
+            main.canvasWindow.fillStyle = "#000000";
+            main.canvasWindow.font = "28px monospace";
+
+            main.drawTextWithShadow( "PUNCHED THESE NAZIS...", 150, 200, "#ff0000" );
+            main.drawTextWithShadow( "BUT THERE ARE STILL MORE OUT THERE!", 25, 250, "#ff0000" );
+            main.drawTextWithShadow( "SAY NO TO WHITE SUPREMACY", 50, 350, "#ff0000" );
+            main.drawTextWithShadow( "SAY NO TO NAZIS", 50, 400, "#ff0000" );
+            main.drawTextWithShadow( "SAY NO TO THE ALT-RIGHT", 50, 450, "#ff0000" );
         }
 
         if ( main.gamePaused )
@@ -362,6 +401,26 @@ main = {
             main.canvasWindow.fillText( "PRESS SPACE TO UNPAUSE", 200, 200 );
         }
 
+    },
+
+    drawTextWithShadow : function( text, x, y, color ) {
+        main.canvasWindow.fillStyle = "#000000";
+        main.canvasWindow.font = "28px monospace";
+        main.canvasWindow.fillText( text, x+1, y+1 );
+        main.canvasWindow.fillText( text, x+1, y-1 );
+        main.canvasWindow.fillText( text, x-1, y+1 );
+        main.canvasWindow.fillText( text, x-1, y-1 );
+        
+        main.canvasWindow.fillText( text, x+2, y+2 );
+        main.canvasWindow.fillText( text, x+2, y-2 );
+        main.canvasWindow.fillText( text, x-2, y+2 );
+        main.canvasWindow.fillText( text, x-2, y-2 );
+
+        
+        main.canvasWindow.fillStyle = "#ffff00";
+        main.canvasWindow.font = "28px monospace";
+        
+        main.canvasWindow.fillText( text, x, y );         
     },
 
     distance : function( objA, objB )
@@ -416,6 +475,11 @@ main = {
                             if ( i + 1 < main.nazis.length )
                             {
                                 main.nazis[i+1].active = true;
+                            }
+                            else
+                            {
+                                // We're out of Nazis!
+                                main.gameOver = true;
                             }
                             main.explodeSound.play();
                         }

@@ -4,14 +4,13 @@ function findNazis()
 {
     var nazis = new Array();
 
+    // https://twitter.com/yesyoureracist
     nazis.push( "Richard Spencer" );
     nazis.push( "Peter Cvjetanovic" );
     nazis.push( "Daniel Reardon" );
     nazis.push( "Jason Kessler" );
     nazis.push( "Joey Salads" );
     nazis.push( "Matthew Colligan" );
-    nazis.push( "Steve Bannon" );
-    nazis.push( "Donald Trump" );
     nazis.push( "Pete Tefft" );
     nazis.push( "Cole White" );
     nazis.push( "James Allsup" );
