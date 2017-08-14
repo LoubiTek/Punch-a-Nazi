@@ -17,6 +17,9 @@ main = {
     naziList : [],
 
     nazis : null,
+
+    //language : "Esperanto",
+    language : "English",
     
     player : {
             x : 640/2-16,
@@ -328,7 +331,13 @@ main = {
         // Draw score
         main.canvasWindow.fillStyle = "#ffffff";
         main.canvasWindow.font = "20px monospace";
-        main.canvasWindow.fillText( "Score: " + main.player.score, 10, 25 );
+        
+        var text = "Score: " + main.player.score;
+        if ( main.language == "Esperanto" )
+        {
+            text = "Poentoj: " + main.player.score;
+        }
+        main.canvasWindow.fillText( text, 10, 25 );
     
         // Draw nazi
         for ( i = 0; i < main.nazis.length; i++ )
@@ -368,7 +377,14 @@ main = {
         {
             main.canvasWindow.fillStyle = "#ffffff";
             main.canvasWindow.font = "20px monospace";
-            main.canvasWindow.fillText( "SUPER PUNCH-A-NAZI", 200, 25 );
+            if ( main.language == "Esperanto" )
+            {
+                main.canvasWindow.fillText( "SUPER PUGNU NAZIOJN", 200, 25 );
+            }
+            else
+            {
+                main.canvasWindow.fillText( "SUPER PUNCH-A-NAZI", 200, 25 );
+            }
         }
 
         if ( main.gameOver == false )
@@ -387,11 +403,22 @@ main = {
             main.canvasWindow.fillStyle = "#000000";
             main.canvasWindow.font = "28px monospace";
 
-            main.drawTextWithShadow( "PUNCHED THESE NAZIS...", 150, 200, "#ff0000" );
-            main.drawTextWithShadow( "BUT THERE ARE STILL MORE OUT THERE!", 25, 250, "#ff0000" );
-            main.drawTextWithShadow( "SAY NO TO WHITE SUPREMACY", 50, 350, "#ff0000" );
-            main.drawTextWithShadow( "SAY NO TO NAZIS", 50, 400, "#ff0000" );
-            main.drawTextWithShadow( "SAY NO TO THE ALT-RIGHT", 50, 450, "#ff0000" );
+            if ( main.language == "Esperanto" )
+            {
+                main.drawTextWithShadow( "PUGNIS TIUN ĈI NAZIOJN...", 150, 200, "#ff0000" );
+                main.drawTextWithShadow( "SED, ANKORAŬ ESTAS PLIAJ!!", 25, 250, "#ff0000" );
+                main.drawTextWithShadow( "MALAKCEPTU BLANK-SUPERECON", 50, 350, "#ff0000" );
+                main.drawTextWithShadow( "MALAKCEPTU NAZIOJN", 50, 400, "#ff0000" );
+                main.drawTextWithShadow( "MALAKCEPTU LA \"ALT-RIGHT\"", 50, 450, "#ff0000" );
+            }
+            else
+            {
+                main.drawTextWithShadow( "PUNCHED THESE NAZIS...", 150, 200, "#ff0000" );
+                main.drawTextWithShadow( "BUT THERE ARE STILL MORE OUT THERE!", 25, 250, "#ff0000" );
+                main.drawTextWithShadow( "SAY NO TO WHITE SUPREMACY", 50, 350, "#ff0000" );
+                main.drawTextWithShadow( "SAY NO TO NAZIS", 50, 400, "#ff0000" );
+                main.drawTextWithShadow( "SAY NO TO THE ALT-RIGHT", 50, 450, "#ff0000" );
+            }
         }
 
         if ( main.gamePaused )
