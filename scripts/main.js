@@ -20,7 +20,8 @@ main = {
     nazis : null,
 
     //language : "Esperanto",
-    language : "English",
+    //language : "English",
+	language : "French",
     
     player : {
             x : 640/2-16,
@@ -57,7 +58,7 @@ main = {
                 if ( this.y < 480-64 )
                 {
                     // fall
-                    this.yVel += 0.5;
+                    this.yVel += .5;
                     if ( this.yVel > 5 )
                     {
                         this.yVel = 5;
@@ -72,7 +73,7 @@ main = {
                 if ( this.xVel <= -1 || this.xVel >= 1 )
                 {
                     // animate
-                    this.frame = this.frame + 0.1;
+                    this.frame = this.frame + .1;
                     if ( this.frame >= this.maxFrame )
                     {
                         this.frame = 0;
@@ -173,8 +174,8 @@ main = {
                 gravity : 2,
                 speed : 2,
                 punchWeight : 10,
-                deaccY : 0.1,
-                deaccX : 0.5,
+                deaccY : .1,
+                deaccX : .5,
                 ded : false,
                 countdown : 0,
 
@@ -197,7 +198,7 @@ main = {
                     if ( this.y < 480-64 )
                     {
                         // fall
-                        this.yVel += 0.5;
+                        this.yVel += .5;
                         if ( this.yVel > 5 )
                         {
                             this.yVel = 5;
@@ -333,7 +334,7 @@ main = {
         main.player.draw( main.canvasWindow );
 
         // Draw score
-        main.canvasWindow.fillStyle = "#ffffff";
+        main.canvasWindow.fillStyle = "#fff";
         main.canvasWindow.font = "20px monospace";
         
         var text = "Score: " + main.player.score;
@@ -341,6 +342,7 @@ main = {
         {
             text = "Poentoj: " + main.player.score;
         }
+		
         main.canvasWindow.fillText( text, 10, 25 );
     
         // Draw nazi
@@ -363,7 +365,7 @@ main = {
                 var y = main.nazis[i].y - 5;
                 
                 // name - outline
-                main.canvasWindow.fillStyle = "#000000";
+                main.canvasWindow.fillStyle = "#000";
                 main.canvasWindow.font = "12px monospace";
                 main.canvasWindow.fillText( main.nazis[i].name, x+1, y+1 );
                 main.canvasWindow.fillText( main.nazis[i].name, x+1, y-1 );
@@ -379,7 +381,7 @@ main = {
 
         if ( main.counter % 100 < 50 )
         {
-            main.canvasWindow.fillStyle = "#ffffff";
+            main.canvasWindow.fillStyle = "#fff";
             main.canvasWindow.font = "20px monospace";
             if ( main.language == "Esperanto" )
             {
@@ -387,7 +389,8 @@ main = {
             }
             else
             {
-                main.canvasWindow.fillText( "SUPER PUNCH-A-NAZI", 200, 25 );
+                //main.canvasWindow.fillText( "SUPER PUNCH-A-NAZI", 200, 25 );
+				main.canvasWindow.fillText( "SUPER COUP DE POING NAZI", 200, 25 );
             }
         }
 
@@ -396,7 +399,7 @@ main = {
             // Draw damage
             if ( main.hitCountdown > 0 )
             {
-                main.canvasWindow.fillStyle = "#ffff00";
+                main.canvasWindow.fillStyle = "#fff";
                 main.canvasWindow.font = "15px monospace";
                 main.canvasWindow.fillText( main.hitAmount, main.hitX, main.hitY );                
             }
@@ -404,38 +407,47 @@ main = {
         else
         {
             // game over
-            main.canvasWindow.fillStyle = "#000000";
+            main.canvasWindow.fillStyle = "#000";
             main.canvasWindow.font = "28px monospace";
 
             if ( main.language == "Esperanto" )
             {
-                main.drawTextWithShadow( "PUGNIS TIUN ĈI NAZIOJN...", 150, 200, "#ff0000" );
-                main.drawTextWithShadow( "SED, ANKORAŬ ESTAS PLIAJ!!", 25, 250, "#ff0000" );
-                main.drawTextWithShadow( "MALAKCEPTU BLANK-SUPERECON", 50, 350, "#ff0000" );
+                main.drawTextWithShadow( "PUGNIS TIUN ĈI NAZIOJN...", 150, 200, "#ff0" );
+                main.drawTextWithShadow( "SED, ANKORAŬ ESTAS PLIAJ!!", 25, 250, "#ff0" );
+                main.drawTextWithShadow( "MALAKCEPTU BLANK-SUPERECON", 50, 350, "#ff0" );
                 main.drawTextWithShadow( "MALAKCEPTU NAZIOJN", 50, 400, "#ff0000" );
-                main.drawTextWithShadow( "MALAKCEPTU LA \"ALT-RIGHT\"", 50, 450, "#ff0000" );
+                main.drawTextWithShadow( "MALAKCEPTU LA \"ALT-RIGHT\"", 50, 450, "#ff0" );
             }
-            else
+            if ( main.language == "English" )
             {
-                main.drawTextWithShadow( "PUNCHED THESE NAZIS...", 150, 200, "#ff0000" );
-                main.drawTextWithShadow( "BUT THERE ARE STILL MORE OUT THERE!", 25, 250, "#ff0000" );
-                main.drawTextWithShadow( "SAY NO TO WHITE SUPREMACY", 50, 350, "#ff0000" );
-                main.drawTextWithShadow( "SAY NO TO NAZIS", 50, 400, "#ff0000" );
-                main.drawTextWithShadow( "SAY NO TO THE ALT-RIGHT", 50, 450, "#ff0000" );
+                main.drawTextWithShadow( "PUNCHED THESE NAZIS...", 150, 200, "#ff0" );
+                main.drawTextWithShadow( "BUT THERE ARE STILL MORE OUT THERE!", 25, 250, "#ff0" );
+                main.drawTextWithShadow( "SAY NO TO WHITE SUPREMACY", 50, 350, "#ff0" );
+                main.drawTextWithShadow( "SAY NO TO NAZIS", 50, 400, "#ff0" );
+                main.drawTextWithShadow( "SAY NO TO THE ALT-RIGHT", 50, 450, "#ff0" );
+            }
+			if ( main.language == "French" )
+            {
+                main.drawTextWithShadow( "FRAPPER CES NAZIS...", 150, 200, "#ff0" );
+                main.drawTextWithShadow( "MAIS ILS SONT ENCORE PLUS LÀ-BAS!", 25, 250, "#ff0" );
+                main.drawTextWithShadow( "DITES NON A LA SUPREMACIE BLANCHE", 50, 350, "#ff0" );
+                main.drawTextWithShadow( "DITES NON AUX NAZIS", 50, 400, "#ff0" );
+                main.drawTextWithShadow( "DITES NON À L'ALTERNATIVE-DROIT", 50, 450, "#ff0" );
             }
         }
 
         if ( main.gamePaused )
         {
-            main.canvasWindow.fillStyle = "#ffffff";
+            main.canvasWindow.fillStyle = "#000";
             main.canvasWindow.font = "20px monospace";
-            main.canvasWindow.fillText( "PRESS SPACE TO UNPAUSE", 200, 200 );
+            //main.canvasWindow.fillText( "PRESS SPACE TO UNPAUSE", 200, 200 ); For English..
+			main.canvasWindow.fillText( "PRESSE ESPACE POUR REPRENDRE", 200, 200 );
         }
 
     },
 
     drawTextWithShadow : function( text, x, y, color ) {
-        main.canvasWindow.fillStyle = "#000000";
+        main.canvasWindow.fillStyle = "#000";
         main.canvasWindow.font = "28px monospace";
         main.canvasWindow.fillText( text, x+1, y+1 );
         main.canvasWindow.fillText( text, x+1, y-1 );
@@ -471,7 +483,7 @@ main = {
     },
 
     keydown : function( event ) {
-        if ( event.key == "a" )
+        if ( event.key == "q" ) // Change letter "a" to "q" for French keyboard
         {
             main.player.xVel = -1;
         }
@@ -531,7 +543,7 @@ main = {
     },
 
     keyup : function( event ) {
-        if ( event.key == "a" || event.key == "d" )
+        if ( event.key == "q" || event.key == "d" )
         {
             main.player.xVel = 0;
         }
